@@ -1,4 +1,4 @@
-# ❄️ Snowing (Latest v3.0.0)
+# ❄️ Snowing (Latest v2.1.0)
 > 컴퓨터 화면 전체에 차분하고 아기자기한 눈 내리는 효과를 연출해 주는 파이썬 투명 위젯 프로그램 ❄️
 > (시스템 트레이 지원)  
 
@@ -23,7 +23,7 @@
   <tr>
     <td style="text-align:center; font-weight: bold;"> v1.0.0</td>
     <td style="text-align:center; font-weight: bold;"> v2.0.0</td>
-    <td style="text-align:center; font-weight: bold;"> v3.0.0</td>
+    <td style="text-align:center; font-weight: bold;"> v2.1.0</td>
   </tr>
   <tr>
     <td><img width="1917" height="1105" alt="image" src="https://github.com/user-attachments/assets/b0992250-acf0-4d9c-82de-f91619205a7f" />
