@@ -2,9 +2,9 @@ import sys
 import random
 import math
 import threading
-from PyQt5.QtCore import Qt, QTimer, QPointF, QPoint
+from PyQt5.QtCore import Qt, QTimer, QPointF, QPoint, QSharedMemory
 from PyQt5.QtGui import QPainter, QPen, QColor, QBrush, QPolygonF, QCursor
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 import pystray
 from PIL import Image, ImageDraw
 
@@ -34,7 +34,7 @@ class SnowflakeWidget(QWidget):
         self.tray_thread.start()
 
     def create_snowflake(self, initial=False):
-        """눈송이 데이터 생성 (기본 낙하 속도 및 투명도 설정)"""
+        """눈송이 데이터 생성"""
         base_alpha = random.randint(130, 210)
         return {
             'x': random.randint(0, self.width()),
@@ -44,42 +44,36 @@ class SnowflakeWidget(QWidget):
             'shape_type': random.randint(0, 3),
             'angle': random.uniform(0, 360),
             'rot_speed': random.uniform(-0.7, 0.7),
-            'base_alpha': base_alpha,     # 본래의 은은한 투명도
-            'current_alpha': base_alpha   # 마우스 근접 시 변하는 투명도 (페이드 아웃용)
+            'base_alpha': base_alpha,
+            'current_alpha': base_alpha
         }
 
     def update_snow(self):
-        """눈송이의 자연스러운 낙하와 마우스 근접 시 페이드 아웃(녹음) 효과 업데이트"""
+        """눈송이 낙하 및 마우스 페이드 아웃 업데이트"""
         cursor_global = QCursor.pos()
         cursor_local = self.mapFromGlobal(cursor_global)
         mx = cursor_local.x()
         my = cursor_local.y()
         
-        melt_radius = 200  # 눈이 서서히 녹아 사라지는(페이드 아웃) 반경
+        melt_radius = 200  # 눈이 녹아 사라지는 반경 (조절 가능)
 
         for flake in self.snowflakes:
-            # 1. 오직 아래로만 차분하게 떨어지는 기본 움직임
             flake['y'] += flake['speed']
 
-            # 2. 마우스와의 거리 계산
             dx = flake['x'] - mx
             dy = flake['y'] - my
             dist = math.hypot(dx, dy)
 
-            # --- [페이드 아웃/녹음 효과] 마우스에 가까워지면 투명도가 0으로 서서히 감소 ---
             if dist < melt_radius:
                 target_alpha = 0
-                fade_rate = 0.15 # 녹아내리는 속도
+                fade_rate = 0.15
                 flake['current_alpha'] += (target_alpha - flake['current_alpha']) * fade_rate
             else:
-                # 마우스에서 멀어지면 원래 투명도로 서서히 복귀
                 fade_rate = 0.08
                 flake['current_alpha'] += (flake['base_alpha'] - flake['current_alpha']) * fade_rate
 
-            # 회전각 업데이트
             flake['angle'] += flake['rot_speed']
             
-            # 화면 아래로 내려가거나 좌우로 크게 벗어나면 위쪽에서 새 눈송이로 재생성
             if flake['y'] > self.height() + 30:
                 new_flake = self.create_snowflake(initial=False)
                 flake.update(new_flake)
@@ -186,6 +180,23 @@ class SnowflakeWidget(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
+    # --- 중복 실행 방지(Single Instance) 로직 ---
+    # 고유한 공유 메모리 키 생성
+    shared_memory = QSharedMemory("SnowingApp_Unique_Key_2026")
+    
+    # 이미 해당 키로 실행 중인 프로세스가 있다면
+    if not shared_memory.create(1):
+        # 알림창(Alert) 띄우기
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setWindowTitle("알림")
+        msg.setText("Snowing 위젯이 이미 실행 중입니다!")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+        sys.exit(0)
+    # ----------------------------------------
+
     widget = SnowflakeWidget()
     widget.root_app = app
     widget.show()
