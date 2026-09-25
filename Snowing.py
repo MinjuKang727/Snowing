@@ -34,56 +34,53 @@ class SnowflakeWidget(QWidget):
         self.tray_thread.start()
 
     def create_snowflake(self, initial=False):
-        """눈송이 데이터 생성 (위치 x, y 및 속도 벡터 vx, vy 포함)"""
+        """눈송이 데이터 생성 (기본 낙하 속도 및 투명도 설정)"""
+        base_alpha = random.randint(130, 210)
         return {
             'x': random.randint(0, self.width()),
             'y': random.randint(0, self.height()) if initial else random.randint(-40, -10),
             'speed': random.uniform(0.5, 1.8),
-            'vx': 0.0,  # 바람에 의해 밀려나는 가로 속도
-            'vy': 0.0,  # 바람에 의해 밀려나는 세로 속도
             'size': random.randint(5, 14),
             'shape_type': random.randint(0, 3),
             'angle': random.uniform(0, 360),
             'rot_speed': random.uniform(-0.7, 0.7),
-            'alpha': random.randint(130, 210)
+            'base_alpha': base_alpha,     # 본래의 은은한 투명도
+            'current_alpha': base_alpha   # 마우스 근접 시 변하는 투명도 (페이드 아웃용)
         }
 
     def update_snow(self):
-        """눈송이 낙하 및 넓은 반경에서 부드럽게 퍼지는 바람 상호작용 업데이트"""
+        """눈송이의 자연스러운 낙하와 마우스 근접 시 페이드 아웃(녹음) 효과 업데이트"""
         cursor_global = QCursor.pos()
         cursor_local = self.mapFromGlobal(cursor_global)
         mx = cursor_local.x()
         my = cursor_local.y()
         
-        # 반경을 넓게 설정 (예: 180픽셀)
-        repel_radius = 180  
+        melt_radius = 200  # 눈이 서서히 녹아 사라지는(페이드 아웃) 반경
 
         for flake in self.snowflakes:
-            # 1. 기본 떨어지는 움직임 + 바람 속도 적용
-            flake['y'] += flake['speed'] + flake['vy']
-            flake['x'] += flake['vx']
-            
-            # 밀려난 속도는 서서히 감쇠 (저항력)
-            flake['vx'] *= 0.88
-            flake['vy'] *= 0.88
+            # 1. 오직 아래로만 차분하게 떨어지는 기본 움직임
+            flake['y'] += flake['speed']
 
-            # 2. 마우스와의 거리 계산 (넓은 반경 바람 효과)
+            # 2. 마우스와의 거리 계산
             dx = flake['x'] - mx
             dy = flake['y'] - my
             dist = math.hypot(dx, dy)
 
-            if dist < repel_radius and dist > 0.1:
-                # 멀리서부터 부드럽게 밀려나도록 세밀한 힘 계산
-                force = (1.0 - (dist / repel_radius)) * 2.8
-                # 마우스 반대 방향으로 밀어내기 + 아래로 살짝 흘러내리는 느낌 추가
-                flake['vx'] += (dx / dist) * force
-                flake['vy'] += (dy / dist) * force * 0.5 + 0.1
+            # --- [페이드 아웃/녹음 효과] 마우스에 가까워지면 투명도가 0으로 서서히 감소 ---
+            if dist < melt_radius:
+                target_alpha = 0
+                fade_rate = 0.15 # 녹아내리는 속도
+                flake['current_alpha'] += (target_alpha - flake['current_alpha']) * fade_rate
+            else:
+                # 마우스에서 멀어지면 원래 투명도로 서서히 복귀
+                fade_rate = 0.08
+                flake['current_alpha'] += (flake['base_alpha'] - flake['current_alpha']) * fade_rate
 
             # 회전각 업데이트
             flake['angle'] += flake['rot_speed']
             
             # 화면 아래로 내려가거나 좌우로 크게 벗어나면 위쪽에서 새 눈송이로 재생성
-            if flake['y'] > self.height() + 30 or flake['x'] < -60 or flake['x'] > self.width() + 60:
+            if flake['y'] > self.height() + 30:
                 new_flake = self.create_snowflake(initial=False)
                 flake.update(new_flake)
                 
@@ -156,7 +153,11 @@ class SnowflakeWidget(QWidget):
         painter.setRenderHint(QPainter.Antialiasing, True)
         
         for flake in self.snowflakes:
-            pen = QPen(QColor(235, 245, 255, flake['alpha']), 0.8, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+            alpha_val = int(flake['current_alpha'])
+            if alpha_val < 3:
+                continue
+
+            pen = QPen(QColor(235, 245, 255, alpha_val), 0.8, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
             painter.setPen(pen)
             painter.setBrush(Qt.NoBrush)
             
