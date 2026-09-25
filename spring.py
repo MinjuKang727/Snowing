@@ -17,11 +17,15 @@ class CherryBlossomWidget(QWidget):
         # 창 설정: 투명하고 항상 위에 위치, 테두리 없음
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.SubWindow)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
+        
+        # 마우스 클릭 및 호버 이벤트를 통과시켜 아래 창을 조작할 수 있게 설정
+        self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        
         self.showFullScreen()
 
-        # 벚꽃잎 리스트 초기화
+        # 벚꽃잎 리스트 초기화 (쾌적한 개수 50개)
         self.petals = []
-        for _ in range(85):
+        for _ in range(50):
             self.petals.append(self.create_petal(initial=True))
             
         # 애니메이션 타이머 (약 50fps)
@@ -34,57 +38,57 @@ class CherryBlossomWidget(QWidget):
         self.tray_thread.start()
 
     def create_petal(self, initial=False):
-        """벚꽃잎 데이터 생성 (부드러운 좌우 흔들림 변수 포함)"""
-        base_alpha = random.randint(150, 230)
+        """벚꽃잎 데이터 생성 (마우스 회피용 속도 벡터 vx, vy 포함)"""
+        base_alpha = random.randint(55, 110)  # 은은하게 비치는 투명도
         return {
             'x': random.randint(0, self.width()),
             'y': random.randint(0, self.height()) if initial else random.randint(-40, -10),
-            'speed': random.uniform(0.8, 2.2),         # 낙하 속도
-            'sway_speed': random.uniform(0.02, 0.06),  # 좌우로 하늘하늘 흔들리는 주기
-            'sway_amp': random.uniform(10, 30),        # 흔들리는 폭
+            'speed': random.uniform(0.7, 1.8),         # 낙하 속도
+            'vx': 0.0,                                 # 마우스 회피 가로 속도
+            'vy': 0.0,                                 # 마우스 회피 세로 속도
+            'sway_speed': random.uniform(0.015, 0.05), # 좌우 흔들리는 주기
+            'sway_amp': random.uniform(15, 35),        # 흔들리는 폭
             'offset_x': random.uniform(0, 100),        # 흔들림 오프셋
-            'size': random.randint(12, 24),            # 벚꽃 크기
+            'size': random.randint(12, 22),            # 벚꽃 크기
             'shape_type': random.randint(0, 1),        # 0: 단일 꽃잎, 1: 5잎 벚꽃송이
             'angle': random.uniform(0, 360),           # 회전 각도
-            'rot_speed': random.uniform(-1.2, 1.2),    # 회전 속도
-            'base_alpha': base_alpha,
-            'current_alpha': base_alpha
+            'rot_speed': random.uniform(-1.0, 1.0),    # 회전 속도
+            'alpha': base_alpha
         }
 
     def update_petals(self):
-        """벚꽃잎 낙하, 하늘하늘 흔들림 및 마우스 근접 시 페이드 아웃 업데이트"""
+        """벚꽃잎 낙하 및 마우스 반경 30 미세 회피 업데이트"""
         cursor_global = QCursor.pos()
         cursor_local = self.mapFromGlobal(cursor_global)
         mx = cursor_local.x()
         my = cursor_local.y()
         
-        melt_radius = 110  # 마우스 근처에 오면 사르르 녹아 사라지는 반경
+        repel_radius = 30  # 마우스 피하는 반경 30 설정
 
         for petal in self.petals:
-            # 1. 아래로 떨어지면서 봄바람에 날리듯 좌우로 하늘하늘 흔들리는 움직임
-            petal['y'] += petal['speed']
+            petal['y'] += petal['speed'] + petal['vy']
+            petal['x'] += petal['vx']
             petal['offset_x'] += petal['sway_speed']
+            
+            petal['vx'] *= 0.85
+            petal['vy'] *= 0.85
+
             current_x = petal['x'] + math.sin(petal['offset_x']) * petal['sway_amp']
 
-            # 2. 마우스와의 거리 계산
             dx = current_x - mx
             dy = petal['y'] - my
             dist = math.hypot(dx, dy)
 
-            # --- [페이드 아웃 효과] 마우스에 가까워지면 사르르 사라짐 ---
-            if dist < melt_radius:
-                target_alpha = 0
-                fade_rate = 0.15
-                petal['current_alpha'] += (target_alpha - petal['current_alpha']) * fade_rate
-            else:
-                fade_rate = 0.08
-                petal['current_alpha'] += (petal['base_alpha'] - petal['current_alpha']) * fade_rate
+            # 마우스가 반경 30 이내로 가까워지면 살짝 튕겨나감
+            if dist < repel_radius and dist > 0.1:
+                force = (1.0 - (dist / repel_radius)) * 2.5
+                petal['vx'] += (dx / dist) * force
+                petal['vy'] += (dy / dist) * force + 0.1
 
-            # 회전각 업데이트
             petal['angle'] += petal['rot_speed']
             
-            # 화면 아래로 내려가면 위쪽에서 새 벚꽃잎으로 재생성
-            if petal['y'] > self.height() + 30:
+            # 화면 아래나 좌우로 벗어나면 위쪽에서 재생성
+            if petal['y'] > self.height() + 30 or petal['x'] < -60 or petal['x'] > self.width() + 60:
                 new_petal = self.create_petal(initial=False)
                 petal.update(new_petal)
                 
@@ -96,7 +100,7 @@ class CherryBlossomWidget(QWidget):
         radius = size / 2.0
 
         if shape_type == 0:
-            # 타입 0: 하늘하늘 떨어지는 단일 벚꽃잎 (타원/눈물방울 형태)
+            # 타입 0: 하늘하늘 떨어지는 단일 벚꽃잎
             path = QPainterPath()
             path.moveTo(0, -radius)
             path.quadTo(radius * 0.7, -radius * 0.3, 0, radius)
@@ -125,18 +129,17 @@ class CherryBlossomWidget(QWidget):
         painter.setRenderHint(QPainter.Antialiasing, True)
         
         for petal in self.petals:
-            alpha_val = int(petal['current_alpha'])
+            alpha_val = int(petal['alpha'])
             if alpha_val < 3:
                 continue
 
-            # 화사하고 부드러운 연분홍 벚꽃 컬러
-            fill_color = QColor(255, 183, 197, int(alpha_val * 0.75)) # 연분홍 채우기
-            pen_color = QColor(255, 140, 160, alpha_val)             # 테두리 선 색상
+            # 은은하고 맑은 연분홍 벚꽃 컬러
+            fill_color = QColor(255, 190, 205, int(alpha_val * 0.75)) 
+            pen_color = QColor(255, 140, 165, int(alpha_val * 1.2))     
 
             painter.setPen(QPen(pen_color, 1.0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
             painter.setBrush(QBrush(fill_color))
             
-            # 흔들림이 반영된 현재 x 위치 계산
             current_x = petal['x'] + math.sin(petal['offset_x']) * petal['sway_amp']
 
             painter.save()
@@ -148,7 +151,7 @@ class CherryBlossomWidget(QWidget):
             painter.restore()
 
     def setup_tray(self):
-        """시스템 트레이 아이콘 설정 (봄 느낌의 핑크빛 아이콘)"""
+        """시스템 트레이 아이콘 설정"""
         image = Image.new('RGB', (64, 64), color=(255, 240, 245))
         dc = ImageDraw.Draw(image)
         dc.ellipse((16, 16, 48, 48), fill=(255, 150, 170))
@@ -167,9 +170,8 @@ class CherryBlossomWidget(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    # --- 중복 실행 방지(Single Instance) 로직 ---
+    # 중복 실행 방지 로직
     shared_memory = QSharedMemory("CherryBlossomApp_Unique_Key_2026")
-    
     if not shared_memory.create(1):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Warning)
@@ -178,7 +180,6 @@ if __name__ == '__main__':
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
         sys.exit(0)
-    # ----------------------------------------
 
     widget = CherryBlossomWidget()
     widget.root_app = app
