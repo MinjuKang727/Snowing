@@ -30,9 +30,9 @@ class SnowflakeWidget(QWidget):
         except Exception:
             pass
 
-        # 눈송이 리스트 초기화 (개수를 조금 더 늘려 은은한 밀도 유지)
+        # 눈송이 리스트 초기화 (더 가벼운 느낌을 위해 개수 100개로 풍성하게 유지)
         self.snowflakes = []
-        for _ in range(90):
+        for _ in range(100):
             self.snowflakes.append(self.create_snowflake(initial=True))
             
         # 애니메이션 타이머 (약 50fps)
@@ -45,16 +45,16 @@ class SnowflakeWidget(QWidget):
         self.tray_thread.start()
 
     def create_snowflake(self, initial=False):
-        """눈송이 데이터 생성 (크기를 8~20 픽셀로 아주 작게 축소)"""
+        """눈송이 데이터 생성 (크기를 5~14 픽셀로 아주 작게 축소)"""
         return {
             'x': random.randint(0, self.width()),
-            'y': random.randint(0, self.height()) if initial else random.randint(-50, -10),
-            'speed': random.uniform(0.6, 2.0),
-            'size': random.randint(8, 20),           # 초소형 크기로 조정
+            'y': random.randint(0, self.height()) if initial else random.randint(-40, -10),
+            'speed': random.uniform(0.5, 1.8),
+            'size': random.randint(5, 14),           # 초미세 크기로 조정
             'shape_type': random.randint(0, 3),      # 4가지의 다양한 결정 패턴
             'angle': random.uniform(0, 360),           # 회전 각도
-            'rot_speed': random.uniform(-0.6, 0.6),    # 회전 속도
-            'alpha': random.randint(140, 220)          # 은은한 투명도
+            'rot_speed': random.uniform(-0.7, 0.7),    # 회전 속도
+            'alpha': random.randint(130, 210)          # 은은한 투명도
         }
 
     def update_snow(self):
@@ -71,7 +71,7 @@ class SnowflakeWidget(QWidget):
         self.update()
 
     def draw_snowflake_shape(self, painter, size, flake):
-        """아주 작으면서도 형태가 살아있는 미니 눈 결정 드로잉"""
+        """매우 작으면서도 결정의 형태를 유지하는 초미세 드로잉"""
         radius = size / 2.0
         shape_type = flake.get('shape_type', 0)
 
@@ -106,24 +106,21 @@ class SnowflakeWidget(QWidget):
             # 1. 메인 줄기
             painter.drawLine(QPointF(0, 0), QPointF(0, -radius))
 
-            # 2. 크기에 맞춘 심플한 세부 장식
+            # 2. 아주 작은 크기에 맞춘 심플한 세부 장식
             if shape_type == 0:
-                # 미니 덴드라이트형
-                y_pos = -radius * 0.6
-                b_len = radius * 0.35
+                y_pos = -radius * 0.5
+                b_len = radius * 0.4
                 painter.drawLine(QPointF(0, y_pos), QPointF(b_len, y_pos - b_len * 0.5))
                 painter.drawLine(QPointF(0, y_pos), QPointF(-b_len, y_pos - b_len * 0.5))
 
             elif shape_type == 1:
-                # Y자 형태 끝단 분기
                 end_pt = QPointF(0, -radius)
                 painter.drawLine(end_pt, QPointF(radius * 0.25, -radius - radius * 0.2))
                 painter.drawLine(end_pt, QPointF(-radius * 0.25, -radius - radius * 0.2))
 
             elif shape_type == 2:
-                # 다이아몬드형 장식
                 y_pos = -radius * 0.5
-                w = radius * 0.2
+                w = radius * 0.25
                 painter.drawLine(QPointF(0, y_pos), QPointF(w, y_pos - w))
                 painter.drawLine(QPointF(w, y_pos - w), QPointF(0, y_pos - w * 2))
                 painter.drawLine(QPointF(0, y_pos), QPointF(-w, y_pos - w))
@@ -133,7 +130,7 @@ class SnowflakeWidget(QWidget):
 
         # 3. 중앙 육각형 코어 장식
         if shape_type != 3:
-            core_r = radius * 0.2
+            core_r = radius * 0.22
             core_poly = QPolygonF()
             for j in range(6):
                 deg = j * 60
@@ -146,7 +143,8 @@ class SnowflakeWidget(QWidget):
         painter.setRenderHint(QPainter.Antialiasing, True)
         
         for flake in self.snowflakes:
-            pen = QPen(QColor(235, 245, 255, flake['alpha']), 1.0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+            # 펜 두께를 0.8로 더욱 얇고 섬세하게 설정
+            pen = QPen(QColor(235, 245, 255, flake['alpha']), 0.8, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
             painter.setPen(pen)
             painter.setBrush(Qt.NoBrush)
             
