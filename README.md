@@ -1,4 +1,4 @@
-# ❄️ Snowing (Latest v2.1.0)
+# ❄️ Snowing (Latest v2.2.0)
 > 컴퓨터 화면 전체에 차분하고 아기자기한 눈 내리는 효과를 연출해 주는 파이썬 투명 위젯 프로그램 ❄️
 > (시스템 트레이 지원)  
 
@@ -21,9 +21,10 @@
 
 <table style="border:none;">
   <tr>
-    <td style="text-align:center; font-weight: bold;"> v1.0.0</td>
-    <td style="text-align:center; font-weight: bold;"> v2.0.0</td>
-    <td style="text-align:center; font-weight: bold;"> v2.1.0</td>
+    <td style="text-align:center; font-weight: bold;"> v1.0.0: 동그란 눈송이</td>
+    <td style="text-align:center; font-weight: bold;"> v2.0.0: 섬세한 눈 결정</td>
+    <td style="text-align:center; font-weight: bold;"> v2.1.0: 눈 결정 크기 축소</td>
+    <td style="text-align:center; font-weight: bold;"> v2.2.0: 눈 결정 크기 더 축소</td>
   </tr>
   <tr>
     <td><img width="1917" height="1105" alt="image" src="https://github.com/user-attachments/assets/b0992250-acf0-4d9c-82de-f91619205a7f" />
@@ -31,6 +32,8 @@
     <td><img width="1917" height="1103" alt="image" src="https://github.com/user-attachments/assets/ed787129-3814-4cf8-b6b4-b21c5a7bcba9" />
 </td>
     <td><img width="1917" height="1105" alt="image" src="https://github.com/user-attachments/assets/483a51af-e47e-4b6d-8962-1bfb1f938baa" />
+</td>
+    <td><img width="1917" height="1103" alt="image" src="https://github.com/user-attachments/assets/3b2f1e73-1987-4051-baa8-a2726e661292" />
 </td>
   </tr>
 </table>
