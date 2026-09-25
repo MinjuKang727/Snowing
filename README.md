@@ -18,6 +18,19 @@
 * **작업 방해 방지 (클릭 투과)**: 화면을 덮고 있지만 마우스 클릭이 그대로 통과하여 평소처럼 PC 작업 가능
 * **시스템 트레이 연동**: 작업 표시줄의 '숨겨진 아이콘'에서 마우스 우클릭을 통해 언제든 편리하게 종료 가능
 
+<br>
+
+### 💡 사용 팁
+- **프로그램을 종료 방법**: 작업 표시줄 오른쪽 아래(숨겨진 아이콘 표시)에서 파란색 아이콘을 마우스 우클릭한 뒤 **'종료(Exit)'** 를 누르시면 됩니다!
+<table style="border:none;">
+  <tr>
+    <td><img width="415" height="248" alt="image" src="https://github.com/user-attachments/assets/21fd2f58-ee47-4dc4-9b00-b12804fe8b8d" />
+</td>
+    <td><img width="415" height="150" alt="image" src="https://github.com/user-attachments/assets/54104a71-5942-4e4f-9d05-a0a7e706482b" />
+</td>
+  </tr>
+</table>
+
 <br><br>
 
 ## 🛠️ 트러블 슈팅
@@ -38,7 +51,7 @@
 복잡한 설치 없이 바로 사용하실 수 있도록 배포 버전을 제공합니다.  
 onefile 배포: 실행 파일(.exe) 하나만 다운로드하여 바로 실행할 수 있습니다.  
 onedir 배포: 압축 파일(.zip)을 다운로드 후 압축 해제하여 내부의 실행 파일(.exe)을 실행합니다. (실행 속도가 조금 더 빠를 수 있습니다.)  
-👉 [다운로드 링크]()  
+👉 [최신버전 다운로드](https://github.com/MinjuKang727/Snowing/releases)  
 
 
 ### 2. (파이썬 직접 실행 시) 필수 설치 라이브러리
