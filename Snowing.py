@@ -30,9 +30,9 @@ class SnowflakeWidget(QWidget):
         except Exception:
             pass
 
-        # 눈송이 리스트 초기화
+        # 눈송이 리스트 초기화 (개수를 조금 더 늘려 은은한 밀도 유지)
         self.snowflakes = []
-        for _ in range(75):
+        for _ in range(90):
             self.snowflakes.append(self.create_snowflake(initial=True))
             
         # 애니메이션 타이머 (약 50fps)
@@ -45,16 +45,16 @@ class SnowflakeWidget(QWidget):
         self.tray_thread.start()
 
     def create_snowflake(self, initial=False):
-        """눈송이 데이터 생성 (다양한 타입 및 크기 부여)"""
+        """눈송이 데이터 생성 (크기를 8~20 픽셀로 아주 작게 축소)"""
         return {
             'x': random.randint(0, self.width()),
-            'y': random.randint(0, self.height()) if initial else random.randint(-60, -10),
-            'speed': random.uniform(0.7, 2.2),
-            'size': random.randint(22, 48),          # 결정 모양이 잘 보이도록 크기 설정
-            'shape_type': random.randint(0, 3),     # 4가지의 다양한 결정 패턴
-            'angle': random.uniform(0, 360),          # 회전 각도
-            'rot_speed': random.uniform(-0.4, 0.4),   # 회전 속도
-            'alpha': random.randint(160, 240)         # 은은한 투명도
+            'y': random.randint(0, self.height()) if initial else random.randint(-50, -10),
+            'speed': random.uniform(0.6, 2.0),
+            'size': random.randint(8, 20),           # 초소형 크기로 조정
+            'shape_type': random.randint(0, 3),      # 4가지의 다양한 결정 패턴
+            'angle': random.uniform(0, 360),           # 회전 각도
+            'rot_speed': random.uniform(-0.6, 0.6),    # 회전 속도
+            'alpha': random.randint(140, 220)          # 은은한 투명도
         }
 
     def update_snow(self):
@@ -64,29 +64,26 @@ class SnowflakeWidget(QWidget):
             flake['angle'] += flake['rot_speed']
             
             # 화면 아래로 내려가면 위쪽에서 재생성
-            if flake['y'] > self.height() + 50:
+            if flake['y'] > self.height() + 30:
                 new_flake = self.create_snowflake(initial=False)
                 flake.update(new_flake)
                 
         self.update()
 
     def draw_snowflake_shape(self, painter, size, flake):
-        """사진 속 결정들(덴드라이트, 판상형, 복합형)을 모사한 기하학적 드로잉"""
+        """아주 작으면서도 형태가 살아있는 미니 눈 결정 드로잉"""
         radius = size / 2.0
         shape_type = flake.get('shape_type', 0)
 
-        # 타입 3: 육각형 판상 결정 (Hexagonal Plate - 사진 하단 중앙 같은 형태)[cite: 9]
+        # 타입 3: 미니 육각형 판상 결정
         if shape_type == 3:
             plate_poly = QPolygonF()
             for j in range(6):
                 deg = j * 60
                 rad = math.radians(deg)
-                plate_poly.append(QPointF(radius * 0.7 * math.math.cos(rad) if hasattr(math, 'math') else radius * 0.7 * math.cos(rad), 
-                                          radius * 0.7 * math.sin(rad)))
-            # 외곽 육각형
+                plate_poly.append(QPointF(radius * 0.7 * math.cos(rad), radius * 0.7 * math.sin(rad)))
             painter.drawPolygon(plate_poly)
             
-            # 내부 장식 육각형 라인
             inner_poly = QPolygonF()
             for j in range(6):
                 deg = j * 60
@@ -94,7 +91,6 @@ class SnowflakeWidget(QWidget):
                 inner_poly.append(QPointF(radius * 0.3 * math.cos(rad), radius * 0.3 * math.sin(rad)))
             painter.drawPolygon(inner_poly)
             
-            # 꼭짓점 연결 선
             for j in range(6):
                 deg = j * 60
                 rad = math.radians(deg)
@@ -102,7 +98,7 @@ class SnowflakeWidget(QWidget):
                                  QPointF(radius * 0.7 * math.cos(rad), radius * 0.7 * math.sin(rad)))
             return
 
-        # 0, 1, 2 타입: 6방향 대칭 구조의 나뭇가지 및 복합 결정
+        # 0, 1, 2 타입: 6방향 대칭 구조
         for i in range(6):
             painter.save()
             painter.rotate(i * 60)
@@ -110,41 +106,34 @@ class SnowflakeWidget(QWidget):
             # 1. 메인 줄기
             painter.drawLine(QPointF(0, 0), QPointF(0, -radius))
 
-            # 2. 패턴별 세부 장식
+            # 2. 크기에 맞춘 심플한 세부 장식
             if shape_type == 0:
-                # 촘촘하고 세밀한 덴드라이트(깃털)형[cite: 9]
-                for pos_ratio in [0.3, 0.5, 0.7, 0.85]:
-                    b_len = radius * (0.32 * (1 - pos_ratio * 0.4))
-                    y_pos = -radius * pos_ratio
-                    painter.drawLine(QPointF(0, y_pos), QPointF(b_len, y_pos - b_len * 0.5))
-                    painter.drawLine(QPointF(0, y_pos), QPointF(-b_len, y_pos - b_len * 0.5))
+                # 미니 덴드라이트형
+                y_pos = -radius * 0.6
+                b_len = radius * 0.35
+                painter.drawLine(QPointF(0, y_pos), QPointF(b_len, y_pos - b_len * 0.5))
+                painter.drawLine(QPointF(0, y_pos), QPointF(-b_len, y_pos - b_len * 0.5))
 
             elif shape_type == 1:
-                # 끝부분이 넓게 퍼지는 꽃잎/방패 형태의 복합 결정[cite: 9, 10]
-                mid_pos = -radius * 0.6
-                painter.drawLine(QPointF(0, mid_pos), QPointF(radius * 0.25, mid_pos - radius * 0.2))
-                painter.drawLine(QPointF(0, mid_pos), QPointF(-radius * 0.25, mid_pos - radius * 0.2))
-                
-                # 끝단 뾰족한 장식
+                # Y자 형태 끝단 분기
                 end_pt = QPointF(0, -radius)
-                painter.drawLine(end_pt, QPointF(radius * 0.12, -radius - radius * 0.25))
-                painter.drawLine(end_pt, QPointF(-radius * 0.12, -radius - radius * 0.25))
+                painter.drawLine(end_pt, QPointF(radius * 0.25, -radius - radius * 0.2))
+                painter.drawLine(end_pt, QPointF(-radius * 0.25, -radius - radius * 0.2))
 
             elif shape_type == 2:
-                # 다이아몬드/화살촉 장식이 반복되는 화려한 결정[cite: 9]
-                for pos_ratio in [0.45, 0.75]:
-                    y_pos = -radius * pos_ratio
-                    w = radius * 0.14
-                    painter.drawLine(QPointF(0, y_pos), QPointF(w, y_pos - w * 0.8))
-                    painter.drawLine(QPointF(w, y_pos - w * 0.8), QPointF(0, y_pos - w * 1.6))
-                    painter.drawLine(QPointF(0, y_pos), QPointF(-w, y_pos - w * 0.8))
-                    painter.drawLine(QPointF(-w, y_pos - w * 0.8), QPointF(0, y_pos - w * 1.6))
+                # 다이아몬드형 장식
+                y_pos = -radius * 0.5
+                w = radius * 0.2
+                painter.drawLine(QPointF(0, y_pos), QPointF(w, y_pos - w))
+                painter.drawLine(QPointF(w, y_pos - w), QPointF(0, y_pos - w * 2))
+                painter.drawLine(QPointF(0, y_pos), QPointF(-w, y_pos - w))
+                painter.drawLine(QPointF(-w, y_pos - w), QPointF(0, y_pos - w * 2))
 
             painter.restore()
 
-        # 3. 중앙 육각형 코어(핵) 장식
+        # 3. 중앙 육각형 코어 장식
         if shape_type != 3:
-            core_r = radius * 0.16
+            core_r = radius * 0.2
             core_poly = QPolygonF()
             for j in range(6):
                 deg = j * 60
@@ -157,7 +146,7 @@ class SnowflakeWidget(QWidget):
         painter.setRenderHint(QPainter.Antialiasing, True)
         
         for flake in self.snowflakes:
-            pen = QPen(QColor(235, 245, 255, flake['alpha']), 1.3, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+            pen = QPen(QColor(235, 245, 255, flake['alpha']), 1.0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
             painter.setPen(pen)
             painter.setBrush(Qt.NoBrush)
             
