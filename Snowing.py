@@ -17,6 +17,10 @@ class SnowflakeWidget(QWidget):
         # 창 설정: 투명하고 항상 위에 위치, 테두리 없음
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.SubWindow)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
+        
+        # --- [추가] 마우스 클릭 및 호버 이벤트를 통과시켜 아래 창을 조작할 수 있게 설정 ---
+        self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        
         self.showFullScreen()
 
         # 눈송이 리스트 초기화
@@ -34,8 +38,8 @@ class SnowflakeWidget(QWidget):
         self.tray_thread.start()
 
     def create_snowflake(self, initial=False):
-        """눈송이 데이터 생성"""
-        base_alpha = random.randint(130, 210)
+        """눈송이 데이터 생성 (눈 결정이 더 투명하게 비치도록 base_alpha값 하향)"""
+        base_alpha = random.randint(45, 110)  # 투명도를 높여 은은하고 맑게 보정
         return {
             'x': random.randint(0, self.width()),
             'y': random.randint(0, self.height()) if initial else random.randint(-40, -10),
@@ -55,7 +59,7 @@ class SnowflakeWidget(QWidget):
         mx = cursor_local.x()
         my = cursor_local.y()
         
-        melt_radius = 200  # 눈이 녹아 사라지는 반경 (조절 가능)
+        melt_radius = 200  # 눈이 녹아 사라지는 반경
 
         for flake in self.snowflakes:
             flake['y'] += flake['speed']
@@ -182,12 +186,9 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     # --- 중복 실행 방지(Single Instance) 로직 ---
-    # 고유한 공유 메모리 키 생성
     shared_memory = QSharedMemory("SnowingApp_Unique_Key_2026")
     
-    # 이미 해당 키로 실행 중인 프로세스가 있다면
     if not shared_memory.create(1):
-        # 알림창(Alert) 띄우기
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Warning)
         msg.setWindowTitle("알림")
@@ -195,7 +196,6 @@ if __name__ == '__main__':
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
         sys.exit(0)
-    # ----------------------------------------
 
     widget = SnowflakeWidget()
     widget.root_app = app
