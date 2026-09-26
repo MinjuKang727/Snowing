@@ -13,7 +13,7 @@ class UnifiedSeasonsWidget(QWidget):
         
     def initUI(self):
         # 창 설정: 투명하고 항상 위에 위치, 테두리 없음, 마우스 클릭 통과
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.SubWindow)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
         self.showFullScreen()
@@ -43,6 +43,9 @@ class UnifiedSeasonsWidget(QWidget):
         painter.end()
 
         self.tray_icon = QSystemTrayIcon(QIcon(pixmap), self)
+
+        # 툴팁 설정 코드
+        self.tray_icon.setToolTip("LiveBg")
         
         # 순정 컨텍스트 메뉴 생성
         self.tray_menu = QMenu()
@@ -60,7 +63,7 @@ class UnifiedSeasonsWidget(QWidget):
     def setup_menu_actions(self):
         themes = [
             ('🌸 봄 (Cherry Blossom)', 'spring'),
-            ('🌿 여름 잎사귀 (Summer Leaves)', 'summer_leaves'),
+            ('🌿 여름 (Summer Leaves)', 'summer_leaves'),
             ('✨ 반딧불이 (Fireflies)', 'fireflies'),
             ('🍁 가을 (Autumn Leaves)', 'autumn'),
             ('❄️ 겨울 (Snowing)', 'snow'),
