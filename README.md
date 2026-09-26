@@ -1,24 +1,89 @@
-# ❄️ Snowing (Latest v2.4.0)
-> 컴퓨터 화면 전체에 차분하고 아기자기한 눈 내리는 효과를 연출해 주는 파이썬 투명 위젯 프로그램 ❄️
-> (시스템 트레이 지원)  
-
-카카오톡의 눈 오는 배경화면에서 아이디어를 얻어,  
-**컴퓨터 화면 전체에 잔잔하게 눈이 내리는 효과**를 주는 파이썬 바탕화면 위젯입니다.  
-투명 창 레이어와 클릭 투과(`WS_EX_TRANSPARENT`) 기술을 적용하여 위젯이 실행 중에도 컴퓨터 작업을 방해하지 않습니다.
+# 🌸 LiveBg (Desktop Seasons Widget)
+> 지친 일상 속 데스크톱에 작은 힐링을 더해주는 **가벼운 파이썬 기반 사계절 라이브 배경화면 위젯**입니다.  
+> 시스템 리소스를 최소화하면서도 부드러운 애니메이션을 제공하도록 설계되었습니다.  
 
 <br><br>
 
 ## 💡 개발 동기
-블로그 포스팅용 트리 만들기를 진행하면서 컴퓨터 화면 최상단에 항상 위치하는 위젯 구현에 관심을 갖게 되었습니다. 구글 Gemini를 통해 파이썬으로 관련 기능을 구현할 수 있음을 알게 된 후, "컴퓨터 화면에 직접 눈이 오게 만들 수 있을까?" 하는 호기심에서 이번 프로젝트를 시작하게 되었습니다.
+블로그 포스팅용 트리 만들기를 진행하면서 컴퓨터 화면 최상단에 항상 위치하는 위젯 구현에 관심을 갖게 되었습니다.  
+구글 Gemini를 통해 파이썬으로 관련 기능을 구현할 수 있음을 알게 된 후,  
+"컴퓨터 화면에 직접 눈이 오게 만들 수 있을까?" 하는 호기심에서 이번 프로젝트를 시작하게 되었습니다.  
+이후 개발이 거듭되어 눈만 내리는 배경화면 위젯 `Snowing.exe`를  
+여러 테마를 선택할 수 있는 라이브 배경화면으로 업그레이드하였습니다.
 
 <br><br>
 
-## ✨ 주요 기능
-* **실시간 눈 내림 효과**: 컴퓨터 전체 화면에 은은하고 차분한 눈송이가 떨어지는 시각적 연출
-* **작업 방해 방지 (클릭 투과)**: 화면을 덮고 있지만 마우스 클릭이 그대로 통과하여 평소처럼 PC 작업 가능
-* **시스템 트레이 연동**: 작업 표시줄의 '숨겨진 아이콘'에서 마우스 우클릭을 통해 언제든 편리하게 종료 가능
-* **정교한 눈 결정 렌더링 구현**(v2.0.0): 덴드라이트(깃털형), 복합 대칭 구조, 육각형 판상형(Hexagonal Plate) 등 실제 자연 속 눈꽃 형태를 수치 기반의 벡터 드로잉으로 구현했습니다.
+## ✨ Key Features (주요 기능)
 
+* **6가지 감성 테마 지원**
+  * 🌸 **봄**: 부드럽게 흩날리는 벚꽃 잎사귀
+  * 🌿 **여름**: 싱그러운 초록 잎사귀와 자연스러운 바람결
+  * ✨ **반딧불이**: 신비로운 밤숲 속 오비탈 웨이브 곡선 유영 및 점멸 효과
+  * 🍁 **가을**: 낭만적인 단풍잎 낙하
+  * ❄️ **겨울**: 은은하게 내리는 눈송이
+  * 🌧️ **비**: 차분한 빗방울과 바닥 물결 파문 효과
+* **항상 위 오버레이 (Always on Top)**
+  * 다른 창이나 폴더를 띄워도 애니메이션이 뒤로 숨지 않고 항상 최상단에서 부드럽게 유지
+* **시스템 트레이 지원**
+  * 작업표시줄 트레이 아이콘 호버 시 프로그램 이름("LiveBg") 툴팁 제공
+  * `QSharedMemory`를 활용한 중복 실행 방지
+
+### 📺 시연 영상
+
+<img width="1280" height="720" alt="VibeCoding-PythonLiveBg--ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/d97d8819-c656-40e8-b396-38f52bfd673d" />
+
+<br><Br>
+
+## 🛠️ Tech Stack (기술 스택)
+
+* **Language**: Python 3.x
+* **GUI Framework**: PyQt5 (`QPainter`, `QTimer`, `QWidget`, `QSystemTrayIcon`)
+* **Packaging**: PyInstaller
+
+<br><Br>
+
+## 최신 버전 다운로드(사용자용)
+👉 [최신 버전 다운로드 링크](https://github.com/MinjuKang727/Snowing/releases)
+
+<br><br>
+## 🚀 Getting Started & Installation (설치 및 실행)
+1. **저장소 클론 및 이동**
+   ```bash
+   git clone [https://github.com/MinjuKang727/Snowing.git](https://github.com/MinjuKang727/Snowing.git)
+   cd Snowing
+   ```
+2. **필수 라이브러리 설치**
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. **프로그램 실행**
+   ```bash
+   python livebg.py
+   ```
+
+<br><Br>
+
+## 📦 Building Executable (배포하기, .exe)
+> PyInstaller를 이용해 단일 실행 파일로 빌드할 수 있습니다:
+
+- onefile 배포
+```Bash
+pyinstaller --clean --noconsole --onefile --icon=livebg2.ico livebg.py
+```
+
+- onedir 배포
+```Bash
+pyinstaller --clean --noconsole --onedir --icon=livebg2.ico livebg.py
+```
+
+<br><Br>
+
+## 📄 License
+> This project is licensed under the [MIT License](https://github.com/MinjuKang727/Snowing/blob/79cf9c656a30301c8c49ed851d2fb41095f623a7/LICENSE).
+
+<br><Br>
+
+## 개발 버전 별 업그레이드 요약
 <table style="border:none;">
   <tr>
     <td style="text-align:center; font-weight: bold;"> v1.0.0: 동그란 눈송이</td>
@@ -40,55 +105,9 @@
 
 - **v2.3.0**: 마우스 반경 눈송이 퍼뜨리기
 - **v2.4.0**: 마우스 반경 눈송이 녹이기(페이드 아웃)
-
-
-<br>
-
-### 💡 사용 팁
-- **프로그램을 종료 방법**: 작업 표시줄 오른쪽 아래(숨겨진 아이콘 표시)에서 파란색 아이콘을 마우스 우클릭한 뒤 **'종료(Exit)'** 를 누르시면 됩니다!
-<table style="border:none;">
-  <tr>
-    <td><img width="415" height="248" alt="image" src="https://github.com/user-attachments/assets/21fd2f58-ee47-4dc4-9b00-b12804fe8b8d" />
-</td>
-    <td><img width="415" height="150" alt="image" src="https://github.com/user-attachments/assets/54104a71-5942-4e4f-9d05-a0a7e706482b" />
-</td>
-  </tr>
-</table>
-
-<br><br>
-
-## 🛠️ 트러블 슈팅
-
-### v1.0.0
-
-1. **눈송이가 비정상적으로 길쭉하게 늘어나는 현상**
-   * *원인*: `canvas.coords`로 눈송이 위치를 재설정할 때 좌표 값이 어긋남
-   * *해결*: 작업에 방해되지 않도록 눈송이 크기를 아주 작고 일정하게(`2~4픽셀`) 고정하고, `coords` 사용 시 4개의 좌표(`x1, y1, x2, y2`)를 정확히 지정해 원래의 동그란 모양을 유지하도록 수정했습니다. 눈의 속도도 `0.7 ~ 2.0`으로 낮추어 차분한 분위기를 연출했습니다.
-
-2. **실행 창으로 인해 '종료 버튼'이 가려지는 문제**
-   * *원인*: 화면 전체를 투명하게 덮는 구조라 일반적인 UI 버튼 배치 불가
-   * *해결*: `pystray` 라이브러리를 도입하여 시계 옆 시스템 트레이 아이콘을 통해 우클릭으로 간편하게 종료할 수 있도록 구현했습니다.
-
-### v2.0.0
-
-1. **PyQt5 전환**: 그래픽 렌더링 품질과 회전/확대 안정성을 위해 기존 Tkinter 기반에서 PyQt5 (QPainter, Antialiasing) 기반으로 프레임워크를 전면 개편했습니다.
-
-2. **의존성 안정화**: PyInstaller 빌드 시 PIL, pystray, PyQt5 패키지가 누락되지 않도록 가상 환경 환경을 정비하여 .exe 실행 파일이 오류 없이 원활히 작동합니다.
-
-<br><br>
-
-## ⚙️ 실행 방법 및 라이브러리 설치
-
-### 1. 실행 파일(.exe) 다운로드
-복잡한 설치 없이 바로 사용하실 수 있도록 배포 버전을 제공합니다.  
-onefile 배포: 실행 파일(.exe) 하나만 다운로드하여 바로 실행할 수 있습니다.  
-onedir 배포: 압축 파일(.zip)을 다운로드 후 압축 해제하여 내부의 실행 파일(.exe)을 실행합니다. (실행 속도가 조금 더 빠를 수 있습니다.)  
-👉 [최신버전 다운로드](https://github.com/MinjuKang727/Snowing/releases)  
-
-
-### 2. (파이썬 직접 실행 시) 필수 설치 라이브러리
-프로그램을 소스 코드로 직접 실행하려면 아래 라이브러리 설치가 필요합니다.  
-
-```bash
-pip install pystray Pillow
-```
+- **v2.5.0**: 중복 실행 방지 기능 추가
+- **v3.0.0**: `Snowing.exe` 업그레이드 -> `LiveBg.exe` (6가지 테마의 라이브 배경화면)
+- **v3.1.0**
+  - 기본 테마 변경: 겨울 -> 봄
+  - 시스템 트레이 UX 개선: 아이콘 `LiveBg` 툴팁 추가
+  - 오버레이 레이어 안정성 확보: 사용 중 배경화면이 최상단에서 내려오던 버그 개선
