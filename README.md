@@ -30,7 +30,7 @@
 
 ### 📺 시연 영상
 
-<img width="1280" height="720" alt="VibeCoding-PythonLiveBg--ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/d97d8819-c656-40e8-b396-38f52bfd673d" />
+<img width="1280" height="720" alt="VibeCoding-PythonLiveBg--ezgif com-video-to-gif-converter" src="https://github.com/MinjuKang727/Snowing/blob/34624cace39db22c46c5a95263086c16a60d3439/LiveBg_demo_video.gif" />
 
 <br><Br>
 
