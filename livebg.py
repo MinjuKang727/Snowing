@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QSystemTrayIcon, QMenu, QActi
 class UnifiedSeasonsWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.current_theme = 'snow'  # 기본 테마: 겨울(눈)
+        self.current_theme = 'spring'  # 기본 테마: 봄(꽃)
         self.initUI()
         
     def initUI(self):
@@ -20,7 +20,7 @@ class UnifiedSeasonsWidget(QWidget):
 
         self.particles = []
         self.ripples = []
-        self.change_theme('snow')
+        self.change_theme('spring')
 
         # 애니메이션 타이머 (약 50fps)
         self.timer = QTimer(self)
